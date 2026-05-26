@@ -3,12 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infinite Lava Platformer</title>
+    <title>Infinite Lava Platformer: Remake</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
-    
-    <script type="module" src="js/main.js"></script>
+
+    <div class="ui-layer">
+        
+        <div id="hud" class="hud-container">
+            <div class="hud-group stats">
+                <div class="health-bar-container">
+                    <div class="health-label">HP</div>
+                    <div class="bar-outer">
+                        <div id="healthBarFill" class="bar-inner" style="width: 100%;"></div>
+                    </div>
+                    <div id="healthText" class="bar-text">200 / 200</div>
+                </div>
+                <div class="distance-container">
+                    <span class="label">DIST:</span> <span id="currentDistance" class="value">0m</span>
+                    <span class="label best">BEST:</span> <span id="bestDistance" class="value">0m</span>
+                </div>
+            </div>
+
+            <div class="hud-group inventory">
+                <div class="inv-slot" title="Launch Pads">
+                    <span class="icon">🚀</span>
+                    <span id="slotLaunchPads" class="count">0</span>
+                </div>
+                <div class="inv-slot" title="Medkits">
+                    <span class="icon">➕</span>
+                    <span id="slotMedkits" class="count">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="menuScreen" class="menu-card interactive hidden">
+            <h1 id="menuTitle">LAVA ESCAPE</h1>
+            <p id="menuSubtitle">The floor is melting. Keep ascending.</p>
+            
+            <div id="gameOverStats" class="game-over-stats hidden">
+                <p>Distance Achieved: <span id="finalDistance" class="highlight">0m</span></p>
+                <p id="newBestNotice" class="glow-text hidden">🏆 NEW BEST DISTANCE! 🏆</p>
+            </div>
+            
+            <button id="btnAction" class="btn-primary">Start Game</button>
+        </div>
+
+    </div>
 </body>
 </html>
