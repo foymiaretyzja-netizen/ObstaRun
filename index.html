@@ -11,7 +11,7 @@
 
     <div class="ui-layer">
         
-        <div id="hud" class="hud-container">
+        <div id="hud" class="hud-container hidden">
             <div class="hud-group stats">
                 <div class="health-bar-container">
                     <div class="health-label">HP</div>
@@ -22,7 +22,6 @@
                 </div>
                 <div class="distance-container">
                     <span class="label">DIST:</span> <span id="currentDistance" class="value">0m</span>
-                    <span class="label best">BEST:</span> <span id="bestDistance" class="value">0m</span>
                 </div>
             </div>
 
@@ -38,18 +37,10 @@
             </div>
         </div>
 
-        <div id="menuScreen" class="menu-card interactive hidden">
-            <h1 id="menuTitle">LAVA ESCAPE</h1>
-            <p id="menuSubtitle">The floor is melting. Keep ascending.</p>
-            
-            <div id="gameOverStats" class="game-over-stats hidden">
-                <p>Distance Achieved: <span id="finalDistance" class="highlight">0m</span></p>
-                <p id="newBestNotice" class="glow-text hidden">🏆 NEW BEST DISTANCE! 🏆</p>
-            </div>
-            
-            <button id="btnAction" class="btn-primary">Start Game</button>
-        </div>
+        <div id="introDistance" class="intro-counter blinking">0m</div>
 
     </div>
+
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
