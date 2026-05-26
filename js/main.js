@@ -32,6 +32,12 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
+// Keep canvas full screen if window resizes
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
 // Start
 initGame();
 gameLoop();
