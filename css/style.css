@@ -1,29 +1,132 @@
-/* CSS for the glowing lava background */
+/* ==========================================================================
+   1. GLOBAL STYLES & FONTS
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+:root {
+    --lava-orange: #ff4800;
+    --lava-glow: #ff8000;
+    --neon-green: #00ff00;
+    --bg-dark: #0a0a0a;
+}
+
 html, body {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
     overflow: hidden;
+    background-color: var(--bg-dark);
+    font-family: 'Orbitron', sans-serif;
+    user-select: none; /* Prevents text highlighting issues while playing */
 }
 
+/* ==========================================================================
+   2. DYNAMIC LAVA BACKGROUND & CINEMATIC EFFECTS
+   ========================================================================== */
 body {
-    background-color: #000; 
-    background-image: linear-gradient(to top, 
-        #ff4800 -10%, #ff6a00 5%, #ff8000 10%, 
-        #ffb000 15%, #000 25%
-    );
-    background-size: 400% 400%;
-    animation: lavaFlow 10s ease infinite;
+    /* Multi-layered gradient for rich visual depth */
+    background-image: 
+        radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.85) 100%), /* Vignette overlay */
+        linear-gradient(to top, 
+            var(--lava-orange) -10%, 
+            #ff6a00 5%, 
+            var(--lava-glow) 12%, 
+            #ffb000 18%, 
+            var(--bg-dark) 30%
+        );
+    background-size: 100% 100%, 400% 400%;
+    animation: lavaFlow 12s ease-in-out infinite;
 }
 
 @keyframes lavaFlow {
-    0% { background-position: 0% 100%; }
-    50% { background-position: 100% 100%; }
-    100% { background-position: 0% 100%; }
+    0% { background-position: center, 0% 100%; }
+    50% { background-position: center, 100% 100%; }
+    100% { background-position: center, 0% 100%; }
 }
 
+/* ==========================================================================
+   3. CANVAS ARCHITECTURE
+   ========================================================================== */
 canvas {
     display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     background-color: transparent;
+    z-index: 1;
+    
+    /* Image rendering controls to keep your canvas graphics crisp */
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+/* ==========================================================================
+   4. UI OVERLAYS (HUD, Menus, Screens)
+   ========================================================================== */
+/* Overlay screens sit safely on top of the canvas layer */
+.ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none; /* Allows mouse clicks to pass through to the canvas */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Interactive elements within layers must enable pointer events */
+.interactive {
+    pointer-events: auto;
+}
+
+/* Sleek Game Over / Start Menu Screen styling */
+.menu-card {
+    background: rgba(10, 10, 10, 0.85);
+    border: 2px solid var(--lava-orange);
+    border-radius: 8px;
+    padding: 30px 50px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(255, 72, 0, 0.3);
+    backdrop-filter: blur(4px);
+    color: #fff;
+}
+
+.menu-card h1 {
+    margin: 0 0 20px 0;
+    font-size: 2.5rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #fff;
+    text-shadow: 0 0 10px var(--lava-orange);
+}
+
+/* Modern Arcade Button Styling */
+.btn-primary {
+    background: transparent;
+    border: 2px solid #fff;
+    color: #fff;
+    padding: 12px 30px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s ease-on-out;
+    border-radius: 4px;
+}
+
+.btn-primary:hover {
+    background: var(--lava-orange);
+    border-color: var(--lava-orange);
+    box-shadow: 0 0 15px var(--lava-glow);
+    transform: scale(1.05);
 }
