@@ -6,7 +6,6 @@
 :root {
     --lava-orange: #ff4800;
     --lava-glow: #ff8000;
-    --neon-green: #00ff00;
     --bg-dark: #0a0a0a;
 }
 
@@ -18,23 +17,24 @@ html, body {
     overflow: hidden;
     background-color: var(--bg-dark);
     font-family: 'Orbitron', sans-serif;
-    user-select: none; /* Prevents text highlighting issues while playing */
+    user-select: none;
+    
+    /* Global smooth entry on bootup/reset */
+    animation: screenFadeIn 0.8s ease-out forwards;
+}
+
+@keyframes screenFadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
 }
 
 /* ==========================================================================
-   2. DYNAMIC LAVA BACKGROUND & CINEMATIC EFFECTS
+   2. BACKGROUND & CANVAS LAYERS
    ========================================================================== */
 body {
-    /* Multi-layered gradient for rich visual depth */
     background-image: 
-        radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.85) 100%), /* Vignette overlay */
-        linear-gradient(to top, 
-            var(--lava-orange) -10%, 
-            #ff6a00 5%, 
-            var(--lava-glow) 12%, 
-            #ffb000 18%, 
-            var(--bg-dark) 30%
-        );
+        radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.85) 100%),
+        linear-gradient(to top, var(--lava-orange) -10%, #ff6a00 5%, var(--lava-glow) 12%, #ffb000 18%, var(--bg-dark) 30%);
     background-size: 100% 100%, 400% 400%;
     animation: lavaFlow 12s ease-in-out infinite;
 }
@@ -45,9 +45,6 @@ body {
     100% { background-position: center, 0% 100%; }
 }
 
-/* ==========================================================================
-   3. CANVAS ARCHITECTURE
-   ========================================================================== */
 canvas {
     display: block;
     position: absolute;
@@ -57,18 +54,11 @@ canvas {
     height: 100vh;
     background-color: transparent;
     z-index: 1;
-    
-    /* Image rendering controls to keep your canvas graphics crisp */
-    image-rendering: -moz-crisp-edges;
-    image-rendering: -webkit-crisp-edges;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
 }
 
 /* ==========================================================================
-   4. UI OVERLAYS (HUD, Menus, Screens)
+   3. RESPONSIVE HUD STYLING
    ========================================================================== */
-/* Overlay screens sit safely on top of the canvas layer */
 .ui-layer {
     position: absolute;
     top: 0;
@@ -76,57 +66,92 @@ canvas {
     width: 100%;
     height: 100%;
     z-index: 10;
-    pointer-events: none; /* Allows mouse clicks to pass through to the canvas */
+    pointer-events: none;
+}
+
+.hud-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    justify-content: space-between;
+    align-items: flex-start;
+    transition: opacity 0.3s ease;
 }
 
-/* Interactive elements within layers must enable pointer events */
-.interactive {
-    pointer-events: auto;
-}
-
-/* Sleek Game Over / Start Menu Screen styling */
-.menu-card {
-    background: rgba(10, 10, 10, 0.85);
-    border: 2px solid var(--lava-orange);
-    border-radius: 8px;
-    padding: 30px 50px;
-    text-align: center;
-    box-shadow: 0 0 30px rgba(255, 72, 0, 0.3);
+.hud-group {
+    background: rgba(10, 10, 10, 0.8);
+    border: 1px solid rgba(255, 72, 0, 0.25);
+    padding: 12px 20px;
+    border-radius: 6px;
     backdrop-filter: blur(4px);
     color: #fff;
 }
 
-.menu-card h1 {
-    margin: 0 0 20px 0;
-    font-size: 2.5rem;
-    font-weight: 900;
-    letter-spacing: 2px;
-    color: #fff;
-    text-shadow: 0 0 10px var(--lava-orange);
-}
-
-/* Modern Arcade Button Styling */
-.btn-primary {
-    background: transparent;
-    border: 2px solid #fff;
-    color: #fff;
-    padding: 12px 30px;
-    font-family: 'Orbitron', sans-serif;
+.distance-container {
+    margin-top: 6px;
     font-size: 1.1rem;
     font-weight: 700;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: all 0.2s ease-on-out;
+}
+
+.distance-container .value {
+    text-shadow: 0 0 8px var(--lava-glow);
+}
+
+.inventory { display: flex; gap: 8px; }
+.inv-slot {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 6px 12px;
     border-radius: 4px;
 }
 
-.btn-primary:hover {
-    background: var(--lava-orange);
-    border-color: var(--lava-orange);
-    box-shadow: 0 0 15px var(--lava-glow);
-    transform: scale(1.05);
+.health-bar-container { display: flex; align-items: center; gap: 10px; }
+.health-label { font-weight: 900; color: var(--lava-orange); }
+.bar-outer { width: 160px; height: 12px; background: #1a1a1a; border-radius: 3px; overflow: hidden; border: 1px solid #333; }
+.bar-inner { height: 100%; background: linear-gradient(90deg, #ff3300, #ff9900); box-shadow: 0 0 8px #ff4800; transition: width 0.2s ease; }
+.bar-text { font-size: 0.8rem; color: #aaa; }
+
+.hidden { display: none !important; }
+
+/* ==========================================================================
+   4. CINEMATIC INTRO EFFECTS
+   ========================================================================== */
+.intro-counter {
+    position: absolute;
+    color: #fff;
+    font-weight: 900;
+    text-shadow: 0 0 20px var(--lava-orange), 0 0 40px var(--lava-glow);
+    z-index: 100;
+    
+    /* Start State: Centered and Massive */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(4);
+    transform-origin: center center;
+    
+    /* Complex curves for dynamic weight interpolation during flight */
+    transition: top 0.9s cubic-bezier(0.25, 1, 0.5, 1),
+                left 0.9s cubic-bezier(0.25, 1, 0.5, 1),
+                transform 0.9s cubic-bezier(0.25, 1, 0.5, 1),
+                text-shadow 0.9s ease;
+}
+
+/* Blinking sequence */
+.blinking {
+    animation: arcadeBlink 0.4s ease infinite alternate;
+}
+
+@keyframes arcadeBlink {
+    0% { opacity: 0.15; }
+    100% { opacity: 1; }
+}
+
+/* Target Destination State: Aligns precisely over the hidden HUD spot */
+.intro-counter.glide-to-corner {
+    top: 56px;
+    left: 105px;
+    transform: translate(0, 0) scale(1);
+    text-shadow: 0 0 8px var(--lava-glow);
 }
