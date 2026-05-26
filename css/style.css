@@ -1,0 +1,29 @@
+/* CSS for the glowing lava background */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    background-color: #000; 
+    background-image: linear-gradient(to top, 
+        #ff4800 -10%, #ff6a00 5%, #ff8000 10%, 
+        #ffb000 15%, #000 25%
+    );
+    background-size: 400% 400%;
+    animation: lavaFlow 10s ease infinite;
+}
+
+@keyframes lavaFlow {
+    0% { background-position: 0% 100%; }
+    50% { background-position: 100% 100%; }
+    100% { background-position: 0% 100%; }
+}
+
+canvas {
+    display: block;
+    background-color: transparent;
+}
