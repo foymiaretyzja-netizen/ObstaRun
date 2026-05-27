@@ -2,7 +2,8 @@
 import { GRID_SIZE, GRAVITY } from './constants.js';
 import { gameStatus, platforms, healingOrbs, resetState } from './state.js';
 import { HealingOrb } from './entities/HealingOrb.js';
-import { keys } from './input.js'; // Imported input tracking just in case
+import { Platform } from './entities/Platform.js'; // 1. Import your new Platform!
+import { keys } from './input.js';
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -10,52 +11,60 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// --- CINEMATIC INTRO HOOK ---
 function runCinematicIntro() {
     const introElement = document.getElementById('introDistance');
     const hudElement = document.getElementById('hud');
 
-    // 1. Lock controls and hide HUD, show blinking 0m center screen
     gameStatus.controlsLocked = true;
     introElement.textContent = "0m";
     introElement.classList.remove('glide-to-corner', 'hidden');
     introElement.classList.add('blinking');
     hudElement.classList.add('hidden');
 
-    // 2. Wait 1.5 seconds, then stop blinking and glide to the top-left corner
     setTimeout(() => {
         introElement.classList.remove('blinking');
         introElement.classList.add('glide-to-corner');
     }, 1500);
 
-    // 3. Once it finishes sliding (0.9 seconds later), hide intro actor, turn on full HUD, unlock controls
     setTimeout(() => {
         introElement.classList.add('hidden'); 
         hudElement.classList.remove('hidden'); 
-        gameStatus.controlsLocked = false; // Player can now move!
+        gameStatus.controlsLocked = false; 
     }, 2400); 
 }
 
 function initGame() {
     resetState();
     
-    // Spawn initial entities
-    healingOrbs.push(new HealingOrb(200, 200));
+    // 2. Spawn a massive test platform right in the middle of the screen
+    platforms.push(new Platform(
+        canvas.width / 2 - 200, // X position (Centered)
+        canvas.height / 2 + 100, // Y position (Lower middle)
+        400, // Width
+        GRID_SIZE * 2 // Height
+    ));
     
-    // Kick off our intro cutscene!
+    healingOrbs.push(new HealingOrb(canvas.width / 2, canvas.height / 2));
+    
     runCinematicIntro();
 }
 
 function gameLoop() {
-    // 1. Clear Canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 2. Update logic
+    // --- UPDATE PHASE ---
+    for (let platform of platforms) {
+        platform.update();
+    }
     for (let orb of healingOrbs) {
         orb.update();
     }
 
-    // 3. Draw logic
+    // --- DRAW PHASE ---
+    // 3. Draw the platforms (passing in ctx!)
+    for (let platform of platforms) {
+        platform.draw(ctx);
+    }
     for (let orb of healingOrbs) {
         orb.draw(ctx);
     }
@@ -68,6 +77,5 @@ window.addEventListener('resize', () => {
     canvas.height = window.innerHeight;
 });
 
-// Start the engine
 initGame();
 gameLoop();
