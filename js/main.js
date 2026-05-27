@@ -1,6 +1,6 @@
 // js/main.js
 import { GRID_SIZE } from './constants.js';
-import { gameStatus, camera, platforms, healingOrbs, resetState } from './state.js';
+import { gameStatus, camera, platforms, healingOrbs, sawTraps, resetState } from './state.js';
 import { Player } from './entities/Player.js';
 import { initInput } from './input.js';
 import { generateTerrain, cleanUpTerrain } from './utils/terrain.js';
@@ -86,6 +86,12 @@ function gameLoop() {
         generateTerrain(camera.x + canvas.width + 1500);
         cleanUpTerrain(camera.x);
 
+        // Update saws and check tracking/collisions against the player
+        for (let saw of sawTraps) {
+            if (saw.update) saw.update();
+            if (saw.checkCollision) saw.checkCollision(player);
+        }
+
         gameStatus.distance = Math.floor(player.x / 15);
         document.getElementById('currentDistance').textContent = `${gameStatus.distance}m`;
         
@@ -104,6 +110,7 @@ function gameLoop() {
 
     for (let platform of platforms) platform.draw(ctx);
     for (let orb of healingOrbs) orb.draw(ctx);
+    for (let saw of sawTraps) saw.draw(ctx); // Render all active saws on screen
     if (player) player.draw(ctx); 
 
     ctx.restore();
