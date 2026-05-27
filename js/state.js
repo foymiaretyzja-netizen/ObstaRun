@@ -14,6 +14,7 @@ export const camera = {
 
 export const platforms = [];
 export const healingOrbs = [];
+export const sawTraps = []; // Tracks all active patrolling saws
 
 export function resetState() {
     gameStatus.controlsLocked = true;
@@ -24,6 +25,8 @@ export function resetState() {
     camera.x = 0;
     camera.y = 0;
     
+    // Clear out arrays completely to prevent memory leaks on restart
     platforms.length = 0;
     healingOrbs.length = 0;
+    sawTraps.length = 0; 
 }
