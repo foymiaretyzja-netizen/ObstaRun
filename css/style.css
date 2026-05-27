@@ -29,7 +29,7 @@ html, body {
 }
 
 /* ==========================================================================
-   2. BACKGROUND & CANVAS LAYERS
+   2. BACKGROUND, ATMOSPHERE & CANVAS LAYERS
    ========================================================================== */
 body {
     background-image: 
@@ -37,12 +37,61 @@ body {
         linear-gradient(to top, var(--lava-orange) -10%, #ff6a00 5%, var(--lava-glow) 12%, #ffb000 18%, var(--bg-dark) 30%);
     background-size: 100% 100%, 400% 400%;
     animation: lavaFlow 12s ease-in-out infinite;
+    position: relative;
+}
+
+/* Drifting Embers / Sparks */
+body::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+    /* Create multiple dot patterns that look like glowing sparks */
+    background-image: 
+        radial-gradient(circle, #ffb000 1px, transparent 2px),
+        radial-gradient(circle, #ff4800 2px, transparent 2px),
+        radial-gradient(circle, #ff8000 1.5px, transparent 2px);
+    background-size: 120px 150px, 200px 200px, 90px 110px;
+    background-position: 0 0, 40px 60px, 100px 20px;
+    opacity: 0.6;
+    animation: embersRise 15s linear infinite;
+}
+
+/* Occasional Background Lava Geyser */
+body::after {
+    content: "";
+    position: absolute;
+    bottom: -50px; /* Hide below the screen when inactive */
+    left: 60%;     /* Positioned slightly off-center */
+    width: 150px;
+    height: 60vh;
+    background: linear-gradient(to top, rgba(255, 72, 0, 0.8), rgba(255, 176, 0, 0.4), transparent);
+    filter: blur(25px);
+    border-radius: 50% 50% 0 0;
+    pointer-events: none;
+    z-index: 0;
+    transform-origin: bottom center;
+    /* Runs a 20-second loop where it sits quietly, then suddenly erupts */
+    animation: geyserEruption 20s ease-in-out infinite;
 }
 
 @keyframes lavaFlow {
     0% { background-position: center, 0% 100%; }
     50% { background-position: center, 100% 100%; }
     100% { background-position: center, 0% 100%; }
+}
+
+@keyframes embersRise {
+    0% { background-position: 0 0, 40px 60px, 100px 20px; }
+    100% { background-position: -50px -300px, 100px -400px, 50px -220px; }
+}
+
+@keyframes geyserEruption {
+    0%, 75%, 100% { opacity: 0; transform: scaleY(0.1) scaleX(0.5); }
+    80% { opacity: 0.9; transform: scaleY(1.1) scaleX(1.3); } /* Sudden burst up */
+    85% { opacity: 0.5; transform: scaleY(0.8) scaleX(1.5); } /* Settles and widens */
+    90% { opacity: 0; transform: scaleY(0.2) scaleX(2); }     /* Fades out */
 }
 
 canvas {
@@ -125,20 +174,17 @@ canvas {
     text-shadow: 0 0 20px var(--lava-orange), 0 0 40px var(--lava-glow);
     z-index: 100;
     
-    /* Start State: Centered and Massive */
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(4);
     transform-origin: center center;
     
-    /* Complex curves for dynamic weight interpolation during flight */
     transition: top 0.9s cubic-bezier(0.25, 1, 0.5, 1),
                 left 0.9s cubic-bezier(0.25, 1, 0.5, 1),
                 transform 0.9s cubic-bezier(0.25, 1, 0.5, 1),
                 text-shadow 0.9s ease;
 }
 
-/* Blinking sequence */
 .blinking {
     animation: arcadeBlink 0.4s ease infinite alternate;
 }
@@ -148,7 +194,6 @@ canvas {
     100% { opacity: 1; }
 }
 
-/* Target Destination State: Aligns precisely over the hidden HUD spot */
 .intro-counter.glide-to-corner {
     top: 56px;
     left: 105px;
