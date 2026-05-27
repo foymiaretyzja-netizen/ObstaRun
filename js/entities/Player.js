@@ -1,5 +1,5 @@
 // js/entities/Player.js
-import { GRAVITY, TERMINAL_VELOCITY, FRICTION, BASE_ACCEL, BASE_JUMP_FORCE } from '../constants.js';
+import { GRAVITY, TERMINAL_VELOCITY, FRICTION, BASE_ACCEL, BASE_JUMP_FORCE, MAX_SPEED } from '../constants.js';
 import { keys } from '../input.js';
 
 export class Player {
@@ -12,18 +12,24 @@ export class Player {
         this.vy = 0;
         this.grounded = false;
         this.jumpCount = 0;
-        this.color = '#808080'; // Sleek slate gray core
+        this.color = '#808080';
     }
 
     update() {
-        // Horizontal Input Handling
+        // Horizontal Input Handling (No more "else" block!)
         if (keys.right) {
             this.vx += BASE_ACCEL;
-        } else if (keys.left) {
+        } 
+        if (keys.left) {
             this.vx -= BASE_ACCEL;
-        } else {
-            this.vx *= FRICTION; // Natural drift reduction
         }
+
+        // 1. Apply Friction EVERY frame to prevent infinite acceleration
+        this.vx *= FRICTION;
+
+        // 2. Hard clamp maximum running speed
+        if (this.vx > MAX_SPEED) this.vx = MAX_SPEED;
+        if (this.vx < -MAX_SPEED) this.vx = -MAX_SPEED;
 
         // Apply Vertical Gravity
         this.vy += GRAVITY;
@@ -35,14 +41,13 @@ export class Player {
         this.x += this.vx;
         this.y += this.vy;
 
-        // Absolute boundaries: don't let player walk backwards off the grid map
+        // Absolute boundaries: don't let player walk backwards off the infinite grid
         if (this.x < 0) {
             this.x = 0;
             this.vx = 0;
         }
     }
 
-    // Handles single-instance trigger mechanics for clean double jumping
     jump() {
         if (this.grounded) {
             this.vy = BASE_JUMP_FORCE;
@@ -55,11 +60,9 @@ export class Player {
     }
 
     draw(ctx) {
-        // Draw character box
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x, this.y, this.width, this.height);
 
-        // Cybernetic inner frame highlight
         ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 2;
         ctx.strokeRect(this.x, this.y, this.width, this.height);
